@@ -1,6 +1,6 @@
 jobs:
 - job: Linux_OpenVINO_CI_Dev
-  pool: Linux-CPU
+  pool: OpenVINO
   steps:
     - template: templates/set-test-data-variables-step.yml
 
