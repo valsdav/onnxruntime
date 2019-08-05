@@ -22,14 +22,6 @@ jobs:
           tar -zxvf azcopy.tar.gz --strip 1
         workingDirectory: $(Build.BinariesDirectory)
 
-    - task: PythonScript@0
-      displayName: 'Download test data'
-      inputs:
-        scriptPath: '$(Build.SourcesDirectory)/tools/ci_build/github/download_test_data.py'
-        arguments: --test_data_url $(TestDataUrl)
-        pythonInterpreter: '/usr/bin/python3'
-        workingDirectory: $(Build.BinariesDirectory)
-
     - script: 'tools/ci_build/github/linux/run_dockerbuild.sh -o ubuntu16.04 -d openvino -r $(Build.BinariesDirectory) -x "--use_openvino CPU_FP32 --build_wheel"'
       displayName: 'Command Line Script'
 
