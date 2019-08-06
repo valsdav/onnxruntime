@@ -1,7 +1,7 @@
 # Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License.
 
-file(GLOB_RECURSE onnxruntime_coreautoml_srcs CONFIGURE_DEPENDS
+file(GLOB onnxruntime_coreautoml_srcs CONFIGURE_DEPENDS
     "${ONNXRUNTIME_ROOT}/core/automl/cpu/*.h"
     "${ONNXRUNTIME_ROOT}/core/automl/cpu/*.cc"
 )

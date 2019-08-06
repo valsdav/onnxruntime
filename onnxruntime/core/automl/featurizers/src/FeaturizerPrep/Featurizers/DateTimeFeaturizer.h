@@ -74,10 +74,6 @@ namespace DateTimeFeaturizer {
 
         private:
         // ----------------------------------------------------------------------
-        // |  Relationships
-        friend class boost::serialization::access;
-
-        // ----------------------------------------------------------------------
         // |  Private Methods
         template <typename ArchiveT>
         void serialize(ArchiveT &ar, unsigned int const version);
