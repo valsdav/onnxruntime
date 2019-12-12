@@ -422,6 +422,7 @@ int64 ConcatenatingInputStream::ByteCount() const {
 
 // ===================================================================
 
+/*
 LimitingInputStream::LimitingInputStream(ZeroCopyInputStream* input,
                                          int64 limit)
     : input_(input), limit_(limit) {
@@ -473,7 +474,7 @@ int64 LimitingInputStream::ByteCount() const {
   }
   return input_->ByteCount() - prior_bytes_read_;
 }
-
+*/
 // ===================================================================
 
 }  // namespace io

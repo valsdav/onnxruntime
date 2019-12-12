@@ -318,7 +318,7 @@ class LIBPROTOBUF_EXPORT ConcatenatingInputStream : public ZeroCopyInputStream {
 };
 
 // ===================================================================
-
+/*
 // A ZeroCopyInputStream which wraps some other stream and limits it to
 // a particular byte count.
 class LIBPROTOBUF_EXPORT LimitingInputStream : public ZeroCopyInputStream {
@@ -339,7 +339,7 @@ class LIBPROTOBUF_EXPORT LimitingInputStream : public ZeroCopyInputStream {
 
   GOOGLE_DISALLOW_EVIL_CONSTRUCTORS(LimitingInputStream);
 };
-
+*/
 // ===================================================================
 
 }  // namespace io
