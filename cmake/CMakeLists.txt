@@ -346,26 +346,18 @@ list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/external)
 #   for cross-compiling
 #2. if ONNX_CUSTOM_PROTOC_EXECUTABLE is not set, Compile everything(including protoc) from source code.
 
-if(onnxruntime_PREFER_SYSTEM_LIB)
-  set(protobuf_MODULE_COMPATIBLE ON)
-  find_package(protobuf)
-endif()
 
-
-if(Protobuf_FOUND OR Protobuf_FOUND)
-  message("Use protobuf from preinstalled system lib")
-  if (onnxruntime_USE_FULL_PROTOBUF)
-    set(PROTOBUF_LIB protobuf::libprotobuf)
-    #We have a check here but most of the cmake users don't know the Protobuf_USE_STATIC_LIBS
-    # variable exists and may leave it in a wrong state.
-    if(NOT Protobuf_USE_STATIC_LIBS)
-      #Indeed here should be a warning, not a fatal error. ONNX Runtime itself can work in such a
-      #setting but it may cause compatibility issue when ONNX Runtime is integrated with the other ONNX ecosystem softwares.
-      message(FATAL_ERROR "Please enable Protobuf_USE_STATIC_LIBS")
-    endif()
-  else()
-    set(PROTOBUF_LIB protobuf::libprotobuf-lite)
-  endif()
+if (onnxruntime_USE_PREINSTALLED_PROTOBUF)
+    add_executable(protoc IMPORTED GLOBAL)
+    find_program(PROTOC_EXE protoc PATHS ${protobuf_INSTALL_PATH}/bin)
+    set_property(TARGET protoc PROPERTY IMPORTED_LOCATION ${PROTOC_EXE})
+    foreach(proto_libname protobuf protobuf-lite)
+      add_library(lib${proto_libname} SHARED IMPORTED GLOBAL)
+      find_library(${proto_libname}_path ${proto_libname} PATHS ${protobuf_INSTALL_PATH}/lib NO_DEFAULT_PATH)
+      set_property(TARGET lib${proto_libname} PROPERTY IMPORTED_LOCATION ${${proto_libname}_path})
+      target_include_directories(lib${proto_libname} INTERFACE "${protobuf_INSTALL_PATH}/include")
+    endforeach(proto_libname)
+  
 else()
   message("Use protobuf from submodule")
   # use protobuf as a submodule
