@@ -349,7 +349,7 @@ list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/external)
 
 if (onnxruntime_USE_PREINSTALLED_PROTOBUF)
     add_executable(protobuf::protoc IMPORTED GLOBAL)
-    find_program(PROTOC_EXE protobuf::protoc PATHS ${protobuf_INSTALL_PATH}/bin)
+    find_program(PROTOC_EXE protoc PATHS ${protobuf_INSTALL_PATH}/bin)
     set_property(TARGET protobuf::protoc PROPERTY IMPORTED_LOCATION ${PROTOC_EXE})
     foreach(proto_libname protobuf protobuf-lite)
       add_library(protobuf::lib${proto_libname} SHARED IMPORTED GLOBAL)
