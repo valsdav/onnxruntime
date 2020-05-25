@@ -4,6 +4,7 @@
 #pragma once
 #include <vector>
 #include <memory>
+#include <cstdlib>
 
 namespace onnxruntime {
 namespace test {
