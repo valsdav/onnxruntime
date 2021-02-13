@@ -500,11 +500,11 @@ inline SessionOptions& SessionOptions::AppendExecutionProvider_OpenVINO(const Or
   return *this;
 }
 
-inline Session::Session(Env& env, const ORTCHAR_T* model_path, const SessionOptions& options) {
+inline Session::Session(const Env& env, const ORTCHAR_T* model_path, const SessionOptions& options) {
   ThrowOnError(GetApi().CreateSession(env, model_path, options, &p_));
 }
 
-inline Session::Session(Env& env, const void* model_data, size_t model_data_length, const SessionOptions& options) {
+inline Session::Session(const Env& env, const void* model_data, size_t model_data_length, const SessionOptions& options) {
   ThrowOnError(GetApi().CreateSessionFromArray(env, model_data, model_data_length, options, &p_));
 }
 

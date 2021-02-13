@@ -240,7 +240,7 @@ if (onnxruntime_MINIMAL_BUILD)
   if (onnxruntime_MINIMAL_BUILD_CUSTOM_OPS)
     add_compile_definitions(ORT_MINIMAL_BUILD_CUSTOM_OPS)
   endif()
-  
+
   set(onnxruntime_REDUCED_OPS_BUILD ON)
 
   if (NOT onnxruntime_ENABLE_PYTHON)
@@ -596,7 +596,7 @@ if(Protobuf_FOUND OR Protobuf_FOUND)
     if(NOT Protobuf_USE_STATIC_LIBS)
       #Indeed here should be a warning, not a fatal error. ONNX Runtime itself can work in such a
       #setting but it may cause compatibility issue when ONNX Runtime is integrated with the other ONNX ecosystem softwares.
-      message(FATAL_ERROR "Please enable Protobuf_USE_STATIC_LIBS")
+      message(WARNING "Please enable Protobuf_USE_STATIC_LIBS")
     endif()
   else()
     set(PROTOBUF_LIB protobuf::libprotobuf-lite)
