@@ -568,7 +568,7 @@ if(onnxruntime_BUILD_BENCHMARKS)
   endif()
 endif()
 
-if(NOT WIN32 AND NOT onnxruntime_PREFER_SYSTEM_LIB)
+if(NOT WIN32)
   add_subdirectory(${PROJECT_SOURCE_DIR}/external/nsync EXCLUDE_FROM_ALL)
 endif()
 # External dependencies
