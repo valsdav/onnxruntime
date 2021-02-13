@@ -211,7 +211,7 @@ if(onnxruntime_USE_OPENMP)
   endif()
 endif()
 
-# 'extended' implies minimal. 
+# 'extended' implies minimal.
 if (onnxruntime_EXTENDED_MINIMAL_BUILD AND NOT onnxruntime_MINIMAL_BUILD)
   set(onnxruntime_MINIMAL_BUILD ON)
 endif()
@@ -225,7 +225,7 @@ if (onnxruntime_MINIMAL_BUILD)
     # enable EPs that compile kernels at runtime
     add_compile_definitions(ORT_EXTENDED_MINIMAL_BUILD)
   endif()
- 
+
   set(onnxruntime_REDUCED_OPS_BUILD ON)
 
   if (NOT onnxruntime_ENABLE_PYTHON)
@@ -550,7 +550,7 @@ if(Protobuf_FOUND OR Protobuf_FOUND)
     if(NOT Protobuf_USE_STATIC_LIBS)
       #Indeed here should be a warning, not a fatal error. ONNX Runtime itself can work in such a
       #setting but it may cause compatibility issue when ONNX Runtime is integrated with the other ONNX ecosystem softwares.
-      message(FATAL_ERROR "Please enable Protobuf_USE_STATIC_LIBS")
+      message(WARNING "Please enable Protobuf_USE_STATIC_LIBS")
     endif()
   else()
     set(PROTOBUF_LIB protobuf::libprotobuf-lite)

@@ -16,6 +16,7 @@ Abstract:
 --*/
 
 #include "mlasi.h"
+#include <string>
 
 //
 // Stores the platform information.
@@ -164,8 +165,11 @@ Return Value:
         //
 
         uint64_t xcr0 = MlasReadExtendedControlRegister(_XCR_XFEATURE_ENABLED_MASK);
+        const char *cpu_opt = std::getenv("MLAS_DYNAMIC_CPU_ARCH");
+        if (cpu_opt == nullptr) cpu_opt = "99";
+        auto opt = std::stoi(cpu_opt);
 
-        if ((xcr0 & 0x6) == 0x6) {
+        if (opt > 0 && (xcr0 & 0x6) == 0x6) {
 
             this->GemmFloatKernel = MlasGemmFloatKernelAvx;
 
@@ -198,7 +202,7 @@ Return Value:
             __cpuid_count(7, 0, Cpuid7[0], Cpuid7[1], Cpuid7[2], Cpuid7[3]);
 #endif
 
-            if (((Cpuid1[2] & 0x1000) != 0) && ((Cpuid7[1] & 0x20) != 0)) {
+            if (opt > 1 && ((Cpuid1[2] & 0x1000) != 0) && ((Cpuid7[1] & 0x20) != 0)) {
 
                 this->GemmU8S8Operation = MlasGemmU8X8Operation<MLAS_GEMM_U8S8_KERNEL_AVX2>;
                 this->GemmU8S8PackedOperation = MlasGemmU8X8PackedOperation<MLAS_GEMM_U8S8_KERNEL_AVX2>;
@@ -221,7 +225,7 @@ Return Value:
                 this->QLinearAddS8Kernel = MlasQLinearAddS8KernelAvx2;
                 this->QLinearAddU8Kernel = MlasQLinearAddU8KernelAvx2;
                 this->ComputeSumExpF32Kernel = MlasComputeSumExpF32KernelFma3;
-                
+
                 //
                 // Check if the processor supports AVXVNNI features.
                 //
@@ -229,7 +233,7 @@ Return Value:
                 unsigned Cpuid7_1[4];
 #if defined(_WIN32)
                 __cpuidex((int*)Cpuid7_1, 7, 1);
-#else  
+#else
                 __cpuid_count(7, 1, Cpuid7_1[0], Cpuid7_1[1], Cpuid7_1[2], Cpuid7_1[3]);
 #endif
 
@@ -248,7 +252,7 @@ Return Value:
                 // operating system supports saving AVX512F state.
                 //
 
-                if (((Cpuid7[1] & 0x10000) != 0) && ((xcr0 & 0xE0) == 0xE0)) {
+                if (opt > 2 && ((Cpuid7[1] & 0x10000) != 0) && ((xcr0 & 0xE0) == 0xE0)) {
 
                     this->GemmFloatKernel = MlasGemmFloatKernelAvx512F;
                     this->GemmDoubleKernel = MlasGemmDoubleKernelAvx512F;
