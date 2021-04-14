@@ -22,30 +22,55 @@ struct OrtValue {
  public:
   OrtValue() : data_(nullptr) {}
   ~OrtValue() = default;
+  OrtValue(const OrtValue& v) : type_(v.type_), fence_(v.fence_) {
+    std::atomic_store(&data_, v.data_);
+  }
 
   OrtValue(void* pData, onnxruntime::MLDataType type, onnxruntime::DeleteFunc deleter) {
     Init(pData, type, deleter);
   }
 
   void Init(void* pData, onnxruntime::MLDataType type, onnxruntime::DeleteFunc deleter) {
-    data_.reset(pData, deleter);
+    std::shared_ptr<void> d(pData, deleter);
+    std::atomic_store(&data_, d);
     type_ = type;
   }
 
   bool IsAllocated() const {
-    return data_ && type_;
+    auto d = std::atomic_load(&data_);
+    return d && type_;
+  }
+
+  OrtValue& operator=(const OrtValue& v) {
+    if (this != &v) {
+      std::atomic_store(&data_, v.data_);
+      type_ = v.type_;
+      fence_ = v.fence_;
+    }
+    return *this;
+  }
+
+  OrtValue& operator=(OrtValue&& v) {
+    if (this != &v) {
+      std::atomic_store(&data_, v.data_);
+      type_ = v.type_;
+      fence_ = v.fence_;
+    }
+    return *this;
   }
 
   template <typename T>
   const T& Get() const {
     ORT_ENFORCE(onnxruntime::DataTypeImpl::GetType<T>() == type_, onnxruntime::DataTypeImpl::GetType<T>(), " != ", type_);
-    return *static_cast<T*>(data_.get());
+    auto d = std::atomic_load(&data_);
+    return *static_cast<T*>(d.get());
   }
 
   template <typename T>
   T* GetMutable() {
     ORT_ENFORCE(onnxruntime::DataTypeImpl::GetType<T>() == type_, onnxruntime::DataTypeImpl::GetType<T>(), " != ", type_);
-    return static_cast<T*>(data_.get());
+    auto d = std::atomic_load(&data_);
+    return static_cast<T*>(d.get());
   }
 
   bool IsTensor() const noexcept {
@@ -85,37 +110,43 @@ struct OrtValue {
 template <>
 inline const onnxruntime::Tensor& OrtValue::Get<onnxruntime::Tensor>() const {
   ORT_ENFORCE(IsTensor(), "Trying to get a Tensor, but got: ", onnxruntime::DataTypeImpl::ToString(type_));
-  return *static_cast<onnxruntime::Tensor*>(data_.get());
+  auto d = std::atomic_load(&data_);
+  return *static_cast<onnxruntime::Tensor*>(d.get());
 }
 
 template <>
 inline onnxruntime::Tensor* OrtValue::GetMutable<onnxruntime::Tensor>() {
   ORT_ENFORCE(IsTensor(), "Trying to get a Tensor, but got: ", onnxruntime::DataTypeImpl::ToString(type_));
-  return static_cast<onnxruntime::Tensor*>(data_.get());
+  auto d = std::atomic_load(&data_);
+  return static_cast<onnxruntime::Tensor*>(d.get());
 }
 
 template <>
 inline const onnxruntime::TensorSeq& OrtValue::Get<onnxruntime::TensorSeq>() const {
   ORT_ENFORCE(IsTensorSequence(), "Trying to get a TensorSeq, but got: ", onnxruntime::DataTypeImpl::ToString(type_));
-  return *static_cast<onnxruntime::TensorSeq*>(data_.get());
+  auto d = std::atomic_load(&data_);
+  return *static_cast<onnxruntime::TensorSeq*>(d.get());
 }
 
 template <>
 inline onnxruntime::TensorSeq* OrtValue::GetMutable<onnxruntime::TensorSeq>() {
   ORT_ENFORCE(IsTensorSequence(), "Trying to get a TensorSeq, but got: ", onnxruntime::DataTypeImpl::ToString(type_));
-  return static_cast<onnxruntime::TensorSeq*>(data_.get());
+  auto d = std::atomic_load(&data_);
+  return static_cast<onnxruntime::TensorSeq*>(d.get());
 }
 
 template <>
 inline const onnxruntime::SparseTensor& OrtValue::Get<onnxruntime::SparseTensor>() const {
   ORT_ENFORCE(IsSparseTensor(), "Trying to get a SparseTensor, but got: ", onnxruntime::DataTypeImpl::ToString(type_));
-  return *static_cast<onnxruntime::SparseTensor*>(data_.get());
+  auto d = std::atomic_load(&data_);
+  return *static_cast<onnxruntime::SparseTensor*>(d.get());
 }
 
 template <>
 inline onnxruntime::SparseTensor* OrtValue::GetMutable<onnxruntime::SparseTensor>() {
   ORT_ENFORCE(IsSparseTensor(), "Trying to get a SparseTensor, but got: ", onnxruntime::DataTypeImpl::ToString(type_));
-  return static_cast<onnxruntime::SparseTensor*>(data_.get());
+  auto d = std::atomic_load(&data_);
+  return static_cast<onnxruntime::SparseTensor*>(d.get());
 }
 
 //TODO: remove the following line
