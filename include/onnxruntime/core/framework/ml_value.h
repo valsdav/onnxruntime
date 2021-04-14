@@ -21,7 +21,10 @@ class TensorSeq;
 struct OrtValue {
  public:
   OrtValue() : data_(nullptr) {}
-  ~OrtValue() = default;
+  ~OrtValue() {
+    std::shared_ptr<void> d(nullptr);
+    std::atomic_store(&data_, d);
+  }
   OrtValue(const OrtValue& v) : type_(v.type_), fence_(v.fence_) {
     std::atomic_store(&data_, v.data_);
   }
